@@ -10,11 +10,11 @@ function initDisplay()
   window.canvas.height = window.innerHeight;
   window.ctx = canvas.getContext('2d');
 
-  window.offset = -0.5;
+  window.offset = 0.5;
 
   window.tileCount = {
-    w : 36,
-    h : 27
+    w : 31,
+    h : 19
   };
 
   window.tileSize = {
@@ -39,12 +39,15 @@ function render()
 {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.beginPath();
-  ctx.arc(character.display_x + 0.5, character.display_y + 0.5, 5, 0, 2 * Math.PI, false);
-  ctx.fill();
+  ctx.fillRect(window.character.display_x,window.character.display_y,window.tileSize.w,window.tileSize.h);
 
-  ctx.beginPath();
-  ctx.moveTo(character.display_x + 0.5, character.display_y + 0.5);
-  ctx.lineTo(cursor.x + 0.5, cursor.y + 0.5);
-  ctx.stroke();
+  for(y=0;y<window.tileCount.h;y++)
+  {
+    for(x=0;x<window.tileCount.w;x++)
+    {
+      xpos = (x * window.tileSize.w) + offset;
+      ypos = (y * window.tileSize.h) + offset;
+      ctx.strokeRect(xpos,ypos,window.tileSize.w,window.tileSize.h);
+    }
+  }
 }
