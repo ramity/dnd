@@ -10,19 +10,21 @@ function initDisplay()
   window.canvas.height = window.innerHeight;
   window.ctx = canvas.getContext('2d');
 
+  window.offset = -0.5;
+
   window.tileCount = {
-    x : 36,
-    y : 27
+    w : 36,
+    h : 27
   };
 
   window.tileSize = {
-    x : canvas.width / tileCount.x,
-    y : canvas.height / tileCount.y
+    w : canvas.width / tileCount.w,
+    h : canvas.height / tileCount.h
   };
 
   window.character = {
-    display_x : (window.canvas.width / 2),
-    display_y : (window.canvas.height / 2),
+    display_x : (window.canvas.width / 2) - (window.tileSize.w / 2) + window.offset,
+    display_y : (window.canvas.height / 2) - (window.tileSize.h / 2) + window.offset,
     x : 0,
     y : 0
   };
