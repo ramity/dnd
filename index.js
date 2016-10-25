@@ -24,32 +24,32 @@ function testMove(x,y)
 {
   clear = true;
 
-  for(i in window.map)
+  for(i in window.map.logic)
   {
-    if(between(x,window.map[i].x,window.map[i].x+window.tileSize.w))
+    if(between(x,window.map.logic[i].x,window.map.logic[i].x+window.tileSize.w))
     {
-      if(between(y,window.map[i].y,window.map[i].y+window.tileSize.h))
+      if(between(y,window.map.logic[i].y,window.map.logic[i].y+window.tileSize.h))
       {
         clear = false;
       }
     }
-    if(between(x+window.tileSize.w,window.map[i].x,window.map[i].x+window.tileSize.w))
+    if(between(x+window.tileSize.w,window.map.logic[i].x,window.map.logic[i].x+window.tileSize.w))
     {
-      if(between(y,window.map[i].y,window.map[i].y+window.tileSize.h))
+      if(between(y,window.map.logic[i].y,window.map.logic[i].y+window.tileSize.h))
       {
         clear = false;
       }
     }
-    if(between(x,window.map[i].x,window.map[i].x+window.tileSize.w))
+    if(between(x,window.map.logic[i].x,window.map.logic[i].x+window.tileSize.w))
     {
-      if(between(y+window.tileSize.h,window.map[i].y,window.map[i].y+window.tileSize.h))
+      if(between(y+window.tileSize.h,window.map.logic[i].y,window.map.logic[i].y+window.tileSize.h))
       {
         clear = false;
       }
     }
-    if(between(x+window.tileSize.w,window.map[i].x,window.map[i].x+window.tileSize.w))
+    if(between(x+window.tileSize.w,window.map.logic[i].x,window.map.logic[i].x+window.tileSize.w))
     {
-      if(between(y+window.tileSize.h,window.map[i].y,window.map[i].y+window.tileSize.h))
+      if(between(y+window.tileSize.h,window.map.logic[i].y,window.map.logic[i].y+window.tileSize.h))
       {
         clear = false;
       }
@@ -106,7 +106,25 @@ function initDisplay()
     h : canvas.height / tileCount.h
   };
 
-  window.map = [{x:-2*window.tileSize.w,y:-2*window.tileSize.h}];
+  window.stepsPerTile = {
+    x : 10,
+    y : 10
+  };
+
+  window.map = {
+    display : [
+      {
+        x: -2 * window.tileSize.w,
+        y: -2 * window.tileSize.h
+      }
+    ],
+    logic : [
+      {
+        x: -2 * window.stepsPerTile.x,
+        y: -2 * window.stepsPerTile.y
+      }
+    ]
+  };
 
   window.character = {
     display_x : (window.canvas.width / 2) - (window.tileSize.w / 2) + window.offset,
@@ -114,9 +132,9 @@ function initDisplay()
     x : 0,
     y : 0,
     speed : {
-      x : window.tileSize.w / 20,
-      y : window.tileSize.h / 20
-    },
+      x : window.tileSize.w / window.stepsPerTile.x,
+      y : window.tileSize.h / window.stepsPerTile.y
+    }
   };
 }
 
@@ -141,11 +159,11 @@ function render()
     }
   }
 
-  for(i in window.map)
+  for(i in window.map.display)
   {
     ctx.fillStyle="#F00";
-    mapx = -window.character.x + window.character.display_x + window.map[i].x;
-    mapy = -window.character.y + window.character.display_y + window.map[i].y;
+    mapx = -window.character.x + window.character.display_x + window.map.display[i].x;
+    mapy = -window.character.y + window.character.display_y + window.map.display[i].y;
     ctx.fillRect(mapx,mapy,window.tileSize.w,window.tileSize.h);
     ctx.fillStyle="#000";
   }
