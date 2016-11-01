@@ -24,38 +24,6 @@ function testMove(x,y)
 {
   clear = true;
 
-  for(i in window.map.logic)
-  {
-    if(between(x,window.map.logic[i].x,window.map.logic[i].x+window.tileSize.w))
-    {
-      if(between(y,window.map.logic[i].y,window.map.logic[i].y+window.tileSize.h))
-      {
-        clear = false;
-      }
-    }
-    if(between(x+window.tileSize.w,window.map.logic[i].x,window.map.logic[i].x+window.tileSize.w))
-    {
-      if(between(y,window.map.logic[i].y,window.map.logic[i].y+window.tileSize.h))
-      {
-        clear = false;
-      }
-    }
-    if(between(x,window.map.logic[i].x,window.map.logic[i].x+window.tileSize.w))
-    {
-      if(between(y+window.tileSize.h,window.map.logic[i].y,window.map.logic[i].y+window.tileSize.h))
-      {
-        clear = false;
-      }
-    }
-    if(between(x+window.tileSize.w,window.map.logic[i].x,window.map.logic[i].x+window.tileSize.w))
-    {
-      if(between(y+window.tileSize.h,window.map.logic[i].y,window.map.logic[i].y+window.tileSize.h))
-      {
-        clear = false;
-      }
-    }
-  }
-
   if(clear)
   {
     character.x = x;
@@ -68,74 +36,53 @@ function testMove(x,y)
   }
 }
 
-function between(value,min,max)
-{
-  if(min <= value)
-  {
-    if(value <= max)
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-  else
-  {
-    return false;
-  }
-}
-
 function initDisplay()
 {
+  //define canvas related variables
   window.canvas = document.getElementById('display');
   window.canvas.width = window.innerWidth;
   window.canvas.height = window.innerHeight;
   window.ctx = canvas.getContext('2d');
 
+  //defines offset placed onto canvas
   window.offset = 0.5;
 
+  //defines number of total tiles per w/h
   window.tileCount = {
-    w : 31,
-    h : 19
+    w : 310,
+    h : 190
   };
 
   window.tileSize = {
+    w : 10,
+    h : 10
+  }
+
+  //defines pixelPerTile
+  window.pixelRatio = {
     w : canvas.width / tileCount.w,
     h : canvas.height / tileCount.h
-  };
+  }
 
-  window.stepsPerTile = {
-    x : 10,
-    y : 10
-  };
-
-  window.map = {
-    display : [
-      {
-        x: -2 * window.tileSize.w,
-        y: -2 * window.tileSize.h
-      }
-    ],
-    logic : [
-      {
-        x: -2 * window.stepsPerTile.x,
-        y: -2 * window.stepsPerTile.y
-      }
-    ]
-  };
-
+  //character variable logic
   window.character = {
-    display_x : (window.canvas.width / 2) - (window.tileSize.w / 2) + window.offset,
-    display_y : (window.canvas.height / 2) - (window.tileSize.h / 2) + window.offset,
     x : 0,
     y : 0,
+    size : {
+      w : 10,
+      h : 10
+    },
     speed : {
-      x : window.tileSize.w / window.stepsPerTile.x,
-      y : window.tileSize.h / window.stepsPerTile.y
+      x : 1,
+      y : 1
     }
-  };
+  }
+
+  //screen origin variable
+  window.origin = {
+    x : (canvas.width / 2) - (pixelRatio.w * (character.size.w / 2)),
+    y : (canvas.height / 2) - (pixelRatio.h * (character.size.h / 2))
+  }
 }
 
 function main()
@@ -147,25 +94,15 @@ function render()
 {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillRect(window.character.display_x,window.character.display_y,window.tileSize.w,window.tileSize.h);
+  ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
 
-  for(y=0;y<window.tileCount.h;y++)
+  for(x=0;x<tileCount.w/tileSize.w;x++)
   {
-    for(x=0;x<window.tileCount.w;x++)
+    for(y=0;y<tileCount.h/tileSize.h;y++)
     {
-      xpos = -window.character.x + (x * window.tileSize.w) + offset;
-      ypos = -window.character.y + (y * window.tileSize.h) + offset;
-      ctx.strokeRect(xpos,ypos,window.tileSize.w,window.tileSize.h);
+      ctx.rect((pixelRatio.w * (x * tileSize.w)),(pixelRatio.h * (y * tileSize.h)),(pixelRatio.w * tileSize.w),(pixelRatio.h * tileSize.h));
+      ctx.stroke();
     }
-  }
-
-  for(i in window.map.display)
-  {
-    ctx.fillStyle="#F00";
-    mapx = -window.character.x + window.character.display_x + window.map.display[i].x;
-    mapy = -window.character.y + window.character.display_y + window.map.display[i].y;
-    ctx.fillRect(mapx,mapy,window.tileSize.w,window.tileSize.h);
-    ctx.fillStyle="#000";
   }
 }
 
