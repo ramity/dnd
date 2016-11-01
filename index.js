@@ -24,15 +24,31 @@ function testMove(x,y)
 {
   clear = true;
 
+  for(i in window.staticMap)
+  {
+    //cx1 //cx2
+    //cy1 //cy2
+
+    cx1 = x;
+    cx2 = x + character.size.w;
+    cy1 = y;
+    cy2 = y + character.size.h;
+
+    ox1 = window.staticMap[i].x;
+    ox2 = window.staticMap[i].x + window.staticMap[i].w;
+    oy1 = window.staticMap[i].y;
+    oy2 = window.staticMap[i].y + window.staticMap[i].h;
+
+    if(cx1 < ox2 && cx2 > ox1 && cy1 < oy2 && cy2 > oy1)
+    {
+      clear = false;
+    }
+  }
+
   if(clear)
   {
     character.x = x;
     character.y = y;
-    console.log("T " + x,y);
-  }
-  else
-  {
-    console.log("F " + x,y);
   }
 }
 
@@ -66,8 +82,8 @@ function initDisplay()
 
   //character variable logic
   window.character = {
-    x : 0,
-    y : 0,
+    x : 20,
+    y : 20,
     size : {
       w : 10,
       h : 10
@@ -78,11 +94,67 @@ function initDisplay()
     }
   }
 
+  window.tileMap = [
+    {
+      x : 0,
+      y : 0,
+      w : 5,
+      h : 1
+    },
+  ];
+
+  window.staticMap = tileMapToStaticMap(tileMap);
+
   //screen origin variable
   window.origin = {
     x : (canvas.width / 2) - (pixelRatio.w * (character.size.w / 2)),
     y : (canvas.height / 2) - (pixelRatio.h * (character.size.h / 2))
   }
+}
+
+function staticPointToDyn(x,y)
+{
+  cx = (pixelRatio.w * (x - character.x) + origin.x);
+  cy = (pixelRatio.h * (y - character.y) + origin.y);
+
+  //return object with corrected x & y
+  return {
+    x : cx,
+    y : cy
+  };
+}
+
+function tileMapToStaticMap(tilemap)
+{
+  map = [];
+
+  for(i in tilemap)
+  {
+    tx = (tilemap[i].x * window.tileSize.w);
+    ty = (tilemap[i].y * window.tileSize.h);
+
+    if(!tilemap[i].w && !tilemap[i].h)
+    {
+      tw = (window.tileSize.w);
+      th = (window.tileSize.h);
+    }
+    else
+    {
+      tw = (window.tileSize.w * tilemap[i].w);
+      th = (window.tileSize.h * tilemap[i].h);
+    }
+
+    object = {
+      x : tx,
+      y : ty,
+      w : tw,
+      h : th
+    };
+
+    map.push(object);
+  }
+
+  return map;
 }
 
 function main()
@@ -100,9 +172,17 @@ function render()
   {
     for(y=0;y<tileCount.h/tileSize.h;y++)
     {
-      ctx.rect((pixelRatio.w * (x * tileSize.w)),(pixelRatio.h * (y * tileSize.h)),(pixelRatio.w * tileSize.w),(pixelRatio.h * tileSize.h));
+      ctx.beginPath();
+      ctx.rect((pixelRatio.w * ((x * tileSize.w) - character.x) + origin.x),(pixelRatio.h * ((y * tileSize.h) - character.y) + origin.y),(pixelRatio.w * tileSize.w),(pixelRatio.h * tileSize.h));
       ctx.stroke();
     }
+  }
+
+  for(i in window.staticMap)
+  {
+    obj = staticPointToDyn(staticMap[i].x, staticMap[i].y);
+
+    ctx.fillRect(obj.x,obj.y,staticMap[i].w * window.pixelRatio.w,staticMap[i].h * window.pixelRatio.h);
   }
 }
 
