@@ -6,20 +6,15 @@ module.exports = {
       y : (window.pixelRatio.h * (y - window.character.y) + window.origin.y)
     };
   },
-  tileMapToStaticMap : function(tilemap)
-  {
-    for(i in tilemap)
-    {
+  tileMapToStaticMap : function(tilemap) {
+    for(i in tilemap) {
       tx = (tilemap[i].x * window.tileSize.w);
       ty = (tilemap[i].y * window.tileSize.h);
 
-      if(!tilemap[i].w && !tilemap[i].h)
-      {
+      if(!tilemap[i].w && !tilemap[i].h) {
         tw = (window.tileSize.w);
         th = (window.tileSize.h);
-      }
-      else
-      {
+      } else {
         tw = (window.tileSize.w * tilemap[i].w);
         th = (window.tileSize.h * tilemap[i].h);
       }
