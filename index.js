@@ -1,6 +1,8 @@
 (function(){
   //write('Hi','./engine/data/1.json');
   //open('./engine/data/1.json');
+  const file = require('./engine/file.js');
+
   initDisplay();
   initMovement();
   setInterval(main,20);
@@ -54,6 +56,8 @@ function testMove(x,y)
 
 function initDisplay()
 {
+  const pos = require('./engine/position.js');
+
   //define canvas related variables
   window.canvas = document.getElementById('display');
   window.canvas.width = window.innerWidth;
@@ -98,63 +102,44 @@ function initDisplay()
     {
       x : 0,
       y : 0,
-      w : 5,
+      w : 10,
+      h : 1
+    },
+    {
+      x : 0,
+      y : 1,
+      w : 1,
+      h : 3
+    },
+    {
+      x : 0,
+      y : 4,
+      w : 10,
       h : 1
     },
   ];
 
-  window.staticMap = tileMapToStaticMap(tileMap);
+  window.staticMap = pos.tileMapToStaticMap(tileMap);
+
+  window.tileEventMap = [
+    {
+      x : 7,
+      y : 1,
+      w : 3,
+      h : 3,
+      style : {
+        color : '#2ecc71'
+      }
+    }
+  ];
+
+  window.eventMap = pos.tileMapToStaticMap(tileEventMap);
 
   //screen origin variable
   window.origin = {
     x : (canvas.width / 2) - (pixelRatio.w * (character.size.w / 2)),
     y : (canvas.height / 2) - (pixelRatio.h * (character.size.h / 2))
   }
-}
-
-function staticPointToDyn(x,y)
-{
-  cx = (pixelRatio.w * (x - character.x) + origin.x);
-  cy = (pixelRatio.h * (y - character.y) + origin.y);
-
-  //return object with corrected x & y
-  return {
-    x : cx,
-    y : cy
-  };
-}
-
-function tileMapToStaticMap(tilemap)
-{
-  map = [];
-
-  for(i in tilemap)
-  {
-    tx = (tilemap[i].x * window.tileSize.w);
-    ty = (tilemap[i].y * window.tileSize.h);
-
-    if(!tilemap[i].w && !tilemap[i].h)
-    {
-      tw = (window.tileSize.w);
-      th = (window.tileSize.h);
-    }
-    else
-    {
-      tw = (window.tileSize.w * tilemap[i].w);
-      th = (window.tileSize.h * tilemap[i].h);
-    }
-
-    object = {
-      x : tx,
-      y : ty,
-      w : tw,
-      h : th
-    };
-
-    map.push(object);
-  }
-
-  return map;
 }
 
 function main()
@@ -164,9 +149,11 @@ function main()
 
 function render()
 {
+  const pos = require('./engine/position.js');
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
+  ctx.fillStyle = '#000';
 
   for(x=0;x<tileCount.w/tileSize.w;x++)
   {
@@ -180,40 +167,26 @@ function render()
 
   for(i in window.staticMap)
   {
-    obj = staticPointToDyn(staticMap[i].x, staticMap[i].y);
+    obj = pos.staticPointToDyn(staticMap[i].x, staticMap[i].y);
 
     ctx.fillRect(obj.x,obj.y,staticMap[i].w * window.pixelRatio.w,staticMap[i].h * window.pixelRatio.h);
   }
-}
 
-function write(input,filepath)
-{
-  var fs = require('fs');
-  fs.writeFile(filepath,input,function(err)
+  for(i in window.eventMap)
   {
-    if(err)
-    {
-      return console.log(err);
-    }
-    else
-    {
-      console.log("The file was saved!");
-    }
-  });
-}
+    obj = pos.staticPointToDyn(eventMap[i].x, eventMap[i].y);
 
-function open(filepath)
-{
-  var fs = require('fs');
-  fs.readFile(filepath,'utf8',function(err,data)
-  {
-    if(err)
+    if(window.eventMap[i].style)
     {
-      console.log(err);
+      if(window.eventMap[i].style.color)
+      {
+        ctx.fillStyle = window.eventMap[i].style.color;
+      }
     }
-    else
-    {
-      return data;
-    }
-  });
+
+    ctx.fillRect(obj.x,obj.y,eventMap[i].w * window.pixelRatio.w,eventMap[i].h * window.pixelRatio.h);
+  }
+
+  ctx.fillStyle = '#000';
+  ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
 }
