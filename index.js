@@ -58,31 +58,12 @@ function initDisplay()
 {
   const pos = require('./engine/position.js');
 
+  window.bullets = [];
+
   //define canvas related variables
   window.canvas = document.getElementById('display');
   window.canvas.width = window.innerWidth;
   window.canvas.height = window.innerHeight;
-  window.ctx = canvas.getContext('2d');
-
-  //defines offset placed onto canvas
-  window.offset = 0.5;
-
-  //defines number of total tiles per w/h
-  window.tileCount = {
-    w : 310,
-    h : 190
-  };
-
-  window.tileSize = {
-    w : 10,
-    h : 10
-  }
-
-  //defines pixelPerTile
-  window.pixelRatio = {
-    w : canvas.width / tileCount.w,
-    h : canvas.height / tileCount.h
-  }
 
   //character variable logic
   window.character = {
@@ -96,6 +77,27 @@ function initDisplay()
       x : 1,
       y : 1
     }
+  }
+
+  window.ctx = canvas.getContext('2d');
+
+  window.cursor = {
+    x : -1,
+    y : -1
+  };
+
+  //defines offset placed onto canvas
+  window.offset = 0.5;
+
+  //defines number of total tiles per w/h
+  window.tileCount = {
+    w : 310,
+    h : 190
+  };
+
+  window.tileSize = {
+    w : 10,
+    h : 10
   }
 
   window.tileMap = [
@@ -119,8 +121,6 @@ function initDisplay()
     },
   ];
 
-  window.staticMap = pos.tileMapToStaticMap(tileMap);
-
   window.tileEventMap = [
     {
       x : 7,
@@ -133,7 +133,28 @@ function initDisplay()
     }
   ];
 
+  canvas.addEventListener('mousemove', function(event)
+  {
+    window.cursor = {
+      x : event.clientX,
+      y : event.clientY
+    };
+  });
+
+  canvas.addEventListener('click', function(event)
+  {
+    createBullet();
+  });
+
   window.eventMap = pos.tileMapToStaticMap(tileEventMap);
+
+  window.staticMap = pos.tileMapToStaticMap(tileMap);
+
+  //defines pixelPerTile
+  window.pixelRatio = {
+    w : canvas.width / tileCount.w,
+    h : canvas.height / tileCount.h
+  }
 
   //screen origin variable
   window.origin = {
@@ -142,9 +163,34 @@ function initDisplay()
   }
 }
 
+function createBullet()
+{
+  angle = Math.atan2(cursor.x - (window.canvas.width / 2), cursor.y - (window.canvas.height / 2));
+  xv = 2 * Math.sin(angle);
+  yv = 2 * Math.cos(angle);
+
+  bullets.push({
+    angle : angle,
+    x : character.x,
+    xv : xv,
+    y : character.y,
+    yv : yv
+  });
+}
+
 function main()
 {
   render();
+  updateBulletPositions();
+}
+
+function updateBulletPositions()
+{
+  for(var i in bullets)
+  {
+    bullets[i].x += bullets[i].xv;
+    bullets[i].y += bullets[i].yv;
+  }
 }
 
 function render()
@@ -189,4 +235,26 @@ function render()
 
   ctx.fillStyle = '#000';
   ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
+
+  if(cursor.x > 0 && cursor.y > 0)
+  {
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2 + 0.5, canvas.height / 2 + 0.5);
+    ctx.lineTo(cursor.x + 0.5, cursor.y + 0.5);
+    ctx.stroke();
+  }
+
+  for(i in bullets)
+  {
+    ctx.beginPath();
+    ctx.arc(
+      (window.pixelRatio.w * (bullets[i].x - window.character.x) + window.origin.x) + 0.5 + ((character.size.w * window.pixelRatio.w) / 2),
+      (window.pixelRatio.h * (bullets[i].y - window.character.y) + window.origin.y) + 0.5 + ((character.size.h * window.pixelRatio.h) / 2),
+      2,
+      0,
+      2 * Math.PI,
+      false
+    );
+    ctx.fill();
+  }
 }
