@@ -76,6 +76,25 @@ function initDisplay()
     speed : {
       x : 1,
       y : 1
+    },
+    stats : {
+      mana : 100,
+      stamina : 100,
+      xp : 0,
+      level : 1,
+      attack : 1,
+      defense : 1,
+      hitPoints : 100,
+      range : 1,
+      magic : 1,
+      cooking : 1,
+      woodCutting : 1,
+      fishing : 1,
+      fireMaking : 1,
+      crafting : 1,
+      smithing : 1,
+      mining : 1,
+      steal : 1,
     }
   }
 
@@ -166,8 +185,9 @@ function initDisplay()
 function createBullet()
 {
   angle = Math.atan2(cursor.x - (window.canvas.width / 2), cursor.y - (window.canvas.height / 2));
-  xv = 2 * Math.sin(angle);
-  yv = 2 * Math.cos(angle);
+
+  xv = 5 * Math.sin(angle);
+  yv = 5 * Math.cos(angle);
 
   bullets.push({
     angle : angle,
@@ -234,13 +254,13 @@ function render()
   }
 
   ctx.fillStyle = '#000';
-  ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
+  //ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
 
   if(cursor.x > 0 && cursor.y > 0)
   {
     ctx.beginPath();
-    ctx.moveTo(canvas.width / 2 + 0.5, canvas.height / 2 + 0.5);
-    ctx.lineTo(cursor.x + 0.5, cursor.y + 0.5);
+    ctx.moveTo(canvas.width / 2, canvas.height / 2);
+    ctx.lineTo(cursor.x, cursor.y);
     ctx.stroke();
   }
 
@@ -248,8 +268,8 @@ function render()
   {
     ctx.beginPath();
     ctx.arc(
-      (window.pixelRatio.w * (bullets[i].x - window.character.x) + window.origin.x) + 0.5 + ((character.size.w * window.pixelRatio.w) / 2),
-      (window.pixelRatio.h * (bullets[i].y - window.character.y) + window.origin.y) + 0.5 + ((character.size.h * window.pixelRatio.h) / 2),
+      (window.pixelRatio.w * (bullets[i].x - window.character.x) + window.origin.x) + ((character.size.w * window.pixelRatio.w) / 2),
+      (window.pixelRatio.h * (bullets[i].y - window.character.y) + window.origin.y) + ((character.size.h * window.pixelRatio.h) / 2),
       2,
       0,
       2 * Math.PI,
