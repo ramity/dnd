@@ -186,14 +186,16 @@ function createBullet()
 {
   angle = Math.atan2(cursor.x - (window.canvas.width / 2), cursor.y - (window.canvas.height / 2));
 
-  xv = 5 * Math.sin(angle);
-  yv = 5 * Math.cos(angle);
+  xv = 10 * Math.sin(angle);
+  yv = 10 * Math.cos(angle);
 
   bullets.push({
     angle : angle,
-    x : character.x,
+    x : (window.pixelRatio.w * (character.size.w / 2)) + origin.x,
+    xs : character.x + (character.size.w / 2),
     xv : xv,
-    y : character.y,
+    y : (window.pixelRatio.h * (character.size.h / 2)) + origin.y,
+    ys : character.y + (character.size.h / 2),
     yv : yv
   });
 }
@@ -254,7 +256,7 @@ function render()
   }
 
   ctx.fillStyle = '#000';
-  //ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
+  ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
 
   if(cursor.x > 0 && cursor.y > 0)
   {
@@ -266,10 +268,15 @@ function render()
 
   for(i in bullets)
   {
+    obj = pos.staticPointToDyn(
+      (bullets[i].xs - (character.x + (character.size.w / 2))),
+      (bullets[i].ys - (character.y + (character.size.h / 2)))
+    );
+
     ctx.beginPath();
     ctx.arc(
-      (window.pixelRatio.w * (bullets[i].x - window.character.x) + window.origin.x) + ((character.size.w * window.pixelRatio.w) / 2),
-      (window.pixelRatio.h * (bullets[i].y - window.character.y) + window.origin.y) + ((character.size.h * window.pixelRatio.h) / 2),
+      bullets[i].x + obj.x - (canvas.width / 2) + ((character.x + (character.size.w / 2)) * pixelRatio.w),
+      bullets[i].y + obj.y - (canvas.height / 2) + ((character.y + (character.size.h / 2)) * pixelRatio.h),
       2,
       0,
       2 * Math.PI,
