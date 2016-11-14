@@ -52,7 +52,17 @@ module.exports = {
   },
   drawPlayer : function()
   {
-    ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * player.size.w, pixelRatio.h * player.size.h);
+    window.player.deg = -Math.atan2(cursor.x - (window.canvas.width / 2), cursor.y - (window.canvas.height / 2)) + Math.PI / 2;
+
+    image = document.getElementById('player');
+
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(player.deg);
+
+    ctx.drawImage(image, -(pixelRatio.w * player.size.w)/2, -(pixelRatio.h * player.size.h)/2, pixelRatio.w * player.size.w, pixelRatio.h * player.size.h);
+
+    ctx.rotate(-player.deg);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
   },
   drawCursor : function()
   {

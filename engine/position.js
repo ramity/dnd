@@ -26,5 +26,30 @@ module.exports = {
     }
 
     return tilemap;
+  },
+  checkCollision : function(x, y, w, h)
+  {
+    for(i in window.staticMap)
+    {
+      //cx1 //cx2
+      //cy1 //cy2
+
+      cx1 = x;
+      cx2 = x + w;
+      cy1 = y;
+      cy2 = y + h;
+
+      ox1 = window.staticMap[i].x;
+      ox2 = window.staticMap[i].x + window.staticMap[i].w;
+      oy1 = window.staticMap[i].y;
+      oy2 = window.staticMap[i].y + window.staticMap[i].h;
+
+      if(cx1 < ox2 && cx2 > ox1 && cy1 < oy2 && cy2 > oy1)
+      {
+        return false;
+      }
+    }
+
+    return true;
   }
 };

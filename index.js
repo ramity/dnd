@@ -69,6 +69,7 @@ function initDisplay()
   window.player = {
     x : 20,
     y : 20,
+    deg : 0,
     size : {
       w : 10,
       h : 10
@@ -233,7 +234,6 @@ function render()
 {
   //requires
   const ren = require('./engine/render.js');
-  const pos = require('./engine/position.js');
 
   //init fillStyle
   ctx.fillStyle = '#000';
