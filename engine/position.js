@@ -1,20 +1,32 @@
 module.exports = {
-  staticPointToDyn : function(x,y) {
-    //return object with corrected x & y
+  staticPointToDyn : function(x,y)
+  {
     return {
       x : (window.pixelRatio.w * (x - window.player.x) + window.origin.x),
       y : (window.pixelRatio.h * (y - window.player.y) + window.origin.y)
     };
   },
-  tileMapToStaticMap : function(tilemap) {
-    for(i in tilemap) {
+  dynPointToStatic : function(x, y)
+  {
+    return {
+      x : ((x - window.origin.x) / window.pixelRatio.w) + window.player.x,
+      y : ((y - window.origin.y) / window.pixelRatio.h) + window.player.y
+    }
+  },
+  tileMapToStaticMap : function(tilemap)
+  {
+    for(i in tilemap)
+    {
       tx = (tilemap[i].x * window.tileSize.w);
       ty = (tilemap[i].y * window.tileSize.h);
 
-      if(!tilemap[i].w && !tilemap[i].h) {
+      if(!tilemap[i].w && !tilemap[i].h)
+      {
         tw = (window.tileSize.w);
         th = (window.tileSize.h);
-      } else {
+      }
+      else
+      {
         tw = (window.tileSize.w * tilemap[i].w);
         th = (window.tileSize.h * tilemap[i].h);
       }

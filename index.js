@@ -216,12 +216,19 @@ function updateBulletPositions()
   {
     if(bullets[i].distance < 666)
     {
-      bullets[i].x += bullets[i].xv;
-      bullets[i].y += bullets[i].yv;
+      if(checkCollision(bullets[i].x, bullets[i].y, bullets[i].xv, bullets[i].yv))
+      {
+        bullets[i].x += bullets[i].xv;
+        bullets[i].y += bullets[i].yv;
 
-      movement = Math.sqrt(Math.pow(bullets[i].xv, 2) + Math.pow(bullets[i].yv, 2));
+        movement = Math.sqrt(Math.pow(bullets[i].xv, 2) + Math.pow(bullets[i].yv, 2));
 
-      bullets[i].distance += movement;
+        bullets[i].distance += movement;
+      }
+      else
+      {
+        bullets.splice(i, 1);
+      }
     }
     else
     {
