@@ -16,10 +16,10 @@ function initMovement()
     kd.tick();
   });
 
-  kd.W.down(function(){testMove(character.x,character.y-character.speed.y)});
-  kd.A.down(function(){testMove(character.x-character.speed.x,character.y)});
-  kd.S.down(function(){testMove(character.x,character.y+character.speed.y)});
-  kd.D.down(function(){testMove(character.x+character.speed.x,character.y)});
+  kd.W.down(function(){testMove(player.x,player.y-player.speed.y)});
+  kd.A.down(function(){testMove(player.x-player.speed.x,player.y)});
+  kd.S.down(function(){testMove(player.x,player.y+player.speed.y)});
+  kd.D.down(function(){testMove(player.x+player.speed.x,player.y)});
 }
 
 function testMove(x,y)
@@ -32,9 +32,9 @@ function testMove(x,y)
     //cy1 //cy2
 
     cx1 = x;
-    cx2 = x + character.size.w;
+    cx2 = x + player.size.w;
     cy1 = y;
-    cy2 = y + character.size.h;
+    cy2 = y + player.size.h;
 
     ox1 = window.staticMap[i].x;
     ox2 = window.staticMap[i].x + window.staticMap[i].w;
@@ -49,8 +49,8 @@ function testMove(x,y)
 
   if(clear)
   {
-    character.x = x;
-    character.y = y;
+    player.x = x;
+    player.y = y;
   }
 }
 
@@ -65,8 +65,8 @@ function initDisplay()
   window.canvas.width = window.innerWidth;
   window.canvas.height = window.innerHeight;
 
-  //character variable logic
-  window.character = {
+  //player variable logic
+  window.player = {
     x : 20,
     y : 20,
     size : {
@@ -78,8 +78,10 @@ function initDisplay()
       y : 1
     },
     stats : {
+      health : 100,
       mana : 100,
       stamina : 100,
+
       xp : 0,
       level : 1,
       attack : 1,
@@ -177,8 +179,8 @@ function initDisplay()
 
   //screen origin variable
   window.origin = {
-    x : (canvas.width / 2) - (pixelRatio.w * (character.size.w / 2)),
-    y : (canvas.height / 2) - (pixelRatio.h * (character.size.h / 2))
+    x : (canvas.width / 2) - (pixelRatio.w * (player.size.w / 2)),
+    y : (canvas.height / 2) - (pixelRatio.h * (player.size.h / 2))
   }
 }
 
@@ -191,12 +193,13 @@ function createBullet()
 
   bullets.push({
     angle : angle,
-    x : (window.pixelRatio.w * (character.size.w / 2)) + origin.x,
-    xs : character.x + (character.size.w / 2),
+    x : (window.pixelRatio.w * (player.size.w / 2)) + origin.x,
+    xs : player.x + (player.size.w / 2),
     xv : xv,
-    y : (window.pixelRatio.h * (character.size.h / 2)) + origin.y,
-    ys : character.y + (character.size.h / 2),
-    yv : yv
+    y : (window.pixelRatio.h * (player.size.h / 2)) + origin.y,
+    ys : player.y + (player.size.h / 2),
+    yv : yv,
+    distance : 0
   });
 }
 
@@ -210,8 +213,19 @@ function updateBulletPositions()
 {
   for(var i in bullets)
   {
-    bullets[i].x += bullets[i].xv;
-    bullets[i].y += bullets[i].yv;
+    if(bullets[i].distance < 666)
+    {
+      bullets[i].x += bullets[i].xv;
+      bullets[i].y += bullets[i].yv;
+
+      movement = Math.sqrt(Math.pow(bullets[i].xv, 2) + Math.pow(bullets[i].yv, 2));
+
+      bullets[i].distance += movement;
+    }
+    else
+    {
+      bullets.splice(i, 1);
+    }
   }
 }
 
@@ -228,7 +242,7 @@ function render()
     for(y=0;y<tileCount.h/tileSize.h;y++)
     {
       ctx.beginPath();
-      ctx.rect((pixelRatio.w * ((x * tileSize.w) - character.x) + origin.x),(pixelRatio.h * ((y * tileSize.h) - character.y) + origin.y),(pixelRatio.w * tileSize.w),(pixelRatio.h * tileSize.h));
+      ctx.rect((pixelRatio.w * ((x * tileSize.w) - player.x) + origin.x),(pixelRatio.h * ((y * tileSize.h) - player.y) + origin.y),(pixelRatio.w * tileSize.w),(pixelRatio.h * tileSize.h));
       ctx.stroke();
     }
   }
@@ -256,7 +270,7 @@ function render()
   }
 
   ctx.fillStyle = '#000';
-  ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * character.size.w, pixelRatio.h * character.size.h);
+  ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * player.size.w, pixelRatio.h * player.size.h);
 
   if(cursor.x > 0 && cursor.y > 0)
   {
@@ -269,14 +283,14 @@ function render()
   for(i in bullets)
   {
     obj = pos.staticPointToDyn(
-      (bullets[i].xs - (character.x + (character.size.w / 2))),
-      (bullets[i].ys - (character.y + (character.size.h / 2)))
+      (bullets[i].xs - (player.x + (player.size.w / 2))),
+      (bullets[i].ys - (player.y + (player.size.h / 2)))
     );
 
     ctx.beginPath();
     ctx.arc(
-      bullets[i].x + obj.x - (canvas.width / 2) + ((character.x + (character.size.w / 2)) * pixelRatio.w),
-      bullets[i].y + obj.y - (canvas.height / 2) + ((character.y + (character.size.h / 2)) * pixelRatio.h),
+      bullets[i].x + obj.x - (canvas.width / 2) + ((player.x + (player.size.w / 2)) * pixelRatio.w),
+      bullets[i].y + obj.y - (canvas.height / 2) + ((player.y + (player.size.h / 2)) * pixelRatio.h),
       2,
       0,
       2 * Math.PI,
