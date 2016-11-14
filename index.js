@@ -231,12 +231,16 @@ function updateBulletPositions()
 
 function render()
 {
+  //requires
   const pos = require('./engine/position.js');
 
+  //clear canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  //init fillStyle
   ctx.fillStyle = '#000';
 
+  //grid render
   for(x=0;x<tileCount.w/tileSize.w;x++)
   {
     for(y=0;y<tileCount.h/tileSize.h;y++)
@@ -247,6 +251,7 @@ function render()
     }
   }
 
+  //static map render
   for(i in window.staticMap)
   {
     obj = pos.staticPointToDyn(staticMap[i].x, staticMap[i].y);
@@ -254,6 +259,7 @@ function render()
     ctx.fillRect(obj.x,obj.y,staticMap[i].w * window.pixelRatio.w,staticMap[i].h * window.pixelRatio.h);
   }
 
+  //event map render
   for(i in window.eventMap)
   {
     obj = pos.staticPointToDyn(eventMap[i].x, eventMap[i].y);
@@ -269,9 +275,11 @@ function render()
     ctx.fillRect(obj.x,obj.y,eventMap[i].w * window.pixelRatio.w,eventMap[i].h * window.pixelRatio.h);
   }
 
+  //character render
   ctx.fillStyle = '#000';
   ctx.fillRect(origin.x + offset, origin.y + offset, pixelRatio.w * player.size.w, pixelRatio.h * player.size.h);
 
+  //cursor line render
   if(cursor.x > 0 && cursor.y > 0)
   {
     ctx.beginPath();
@@ -280,6 +288,7 @@ function render()
     ctx.stroke();
   }
 
+  //bullets render
   for(i in bullets)
   {
     obj = pos.staticPointToDyn(
@@ -287,15 +296,42 @@ function render()
       (bullets[i].ys - (player.y + (player.size.h / 2)))
     );
 
+    tx = bullets[i].x + obj.x - (canvas.width / 2) + ((player.x + (player.size.w / 2)) * pixelRatio.w);
+    ty = bullets[i].y + obj.y - (canvas.height / 2) + ((player.y + (player.size.h / 2)) * pixelRatio.h);
+
     ctx.beginPath();
-    ctx.arc(
-      bullets[i].x + obj.x - (canvas.width / 2) + ((player.x + (player.size.w / 2)) * pixelRatio.w),
-      bullets[i].y + obj.y - (canvas.height / 2) + ((player.y + (player.size.h / 2)) * pixelRatio.h),
-      2,
-      0,
-      2 * Math.PI,
-      false
-    );
+    ctx.arc(tx, ty, 2, 0, 2 * Math.PI, false);
     ctx.fill();
   }
+
+  //tx2,ty2 //tx2+tw,ty2
+  //tx1,ty1 //tx1+tw,ty1
+  tw = 400;
+  th = 20;
+  to = 5;
+
+  tx1 = to + 0;
+  tx2 = to + 10;
+  ty1 = canvas.height - to;
+  ty2 = canvas.height - to - th;
+
+  ctx.beginPath();
+  ctx.moveTo(tx1,ty1);
+  ctx.lineTo(tx2,ty2);
+  ctx.lineTo(tx2 + tw, ty2);
+  ctx.lineTo(tw, ty1);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#2ecc71';
+
+  tw = 400 * (player.stats.health / player.stats.hitPoints);
+
+  ctx.beginPath();
+  ctx.moveTo(tx1 + 3,ty1 - 2);
+  ctx.lineTo(tx2 + 1,ty2 + 2);
+  ctx.lineTo(tx2 + tw - 3, ty2 + 2);
+  ctx.lineTo(tw - 1, ty1 - 2);
+  ctx.closePath();
+  ctx.fill();
 }
