@@ -80,16 +80,10 @@ module.exports = {
 
     for(i in bullets)
     {
-      obj = pos.staticPointToDyn(
-        (bullets[i].xs - (player.x + (player.size.w / 2))),
-        (bullets[i].ys - (player.y + (player.size.h / 2)))
-      );
-
-      tx = bullets[i].x + obj.x - (canvas.width / 2) + ((player.x + (player.size.w / 2)) * pixelRatio.w);
-      ty = bullets[i].y + obj.y - (canvas.height / 2) + ((player.y + (player.size.h / 2)) * pixelRatio.h);
+      obj = pos.staticPointToDyn(bullets[i].dx, bullets[i].dy);
 
       ctx.beginPath();
-      ctx.arc(tx, ty, 2, 0, 2 * Math.PI, false);
+      ctx.arc(obj.x, obj.y, bullets[i].size.w, 0, 2 * Math.PI, false);
       ctx.fill();
     }
   },

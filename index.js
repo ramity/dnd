@@ -129,7 +129,9 @@ function initDisplay()
       smithing : 1,
       mining : 1,
       steal : 1,
-    }
+    },
+    inventory : [],
+
   }
 
   window.ctx = canvas.getContext('2d');
@@ -218,18 +220,17 @@ function initDisplay()
 
 function createBullet()
 {
-  angle = Math.atan2(cursor.x - (window.canvas.width / 2), cursor.y - (window.canvas.height / 2));
+  angle = Math.atan2(cursor.y - (window.canvas.height / 2), cursor.x - (window.canvas.width / 2));
 
-  xv = 10 * Math.sin(angle);
-  yv = 10 * Math.cos(angle);
+  xv = 5 * Math.cos(angle);
+  yv = 5 * Math.sin(angle);
 
   bullets.push({
-    angle : angle,
-    x : (window.pixelRatio.w * (player.size.w / 2)) + origin.x,
-    xs : player.x + (player.size.w / 2),
+    dx : player.x + (player.size.w / 2),
+    dy : player.y + (player.size.h / 2),
+    ox : player.x + (player.size.w / 2),
+    oy : player.y + (player.size.h / 2),
     xv : xv,
-    y : (window.pixelRatio.h * (player.size.h / 2)) + origin.y,
-    ys : player.y + (player.size.h / 2),
     yv : yv,
     //overwrite size via weapon in use
     size : {
@@ -252,34 +253,20 @@ function updateBulletPositions()
 
   for(var i in bullets)
   {
-    if(bullets[i].distance < 666)
+    console.log(bullets[i]);
+
+    if(bullets[i].distance <= 600)
     {
-      console.log(bullets[i]);
-
-      obj = pos.dynPointToStatic(bullets[i].x, bullets[i].y);
-
-      clear = true;
-
-      xdloop : for(xd=0;xd<bullets[i].xv;yd++)
+      if(pos.checkCollision(bullets[i].dx, bullets[i].dy, bullets[i].xv, bullets[i].yv))
       {
-        ydloop : for(yd=0;yd<bullets[i].yv;yd++)
-        {
-          if(! pos.checkCollision(obj.x + xd, obj.y + yd, bullets[i].size.w, bullets[i].size.h))
-          {
-            clear = false;
-            break xdloop;
-          }
-        }
-      }
-
-      if(clear)
-      {
-        bullets[i].x += bullets[i].xv;
-        bullets[i].y += bullets[i].yv;
+        bullets[i].dx += bullets[i].xv;
+        bullets[i].dy += bullets[i].yv;
 
         movement = Math.sqrt(Math.pow(bullets[i].xv, 2) + Math.pow(bullets[i].yv, 2));
 
         bullets[i].distance += movement;
+
+        console.log(bullets[i].distance);
       }
       else
       {
