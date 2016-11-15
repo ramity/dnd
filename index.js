@@ -65,6 +65,37 @@ function initDisplay()
   window.canvas.width = window.innerWidth;
   window.canvas.height = window.innerHeight;
 
+  window.weapons = {
+    pistol : {
+      stats : {
+        //damage drop
+        damage : function(distance) {
+          if(distance > 0 && distance <= 300)
+          {
+            return 15
+          }
+          else if (distance > 300 && distance <= 600)
+          {
+            return 10;
+          }
+        },
+        reloadTime : {
+          active : 1000,
+          empty : 1250
+        },
+        magSize : 40,
+        spread : Math.PI/20,
+        fireRate : 2,
+        mobility : 1
+      },
+      bullet : {
+        size : 2,
+        color : '#000',
+        speed : 5
+      }
+    }
+  }
+
   //player variable logic
   window.player = {
     x : 20,
@@ -200,6 +231,11 @@ function createBullet()
     y : (window.pixelRatio.h * (player.size.h / 2)) + origin.y,
     ys : player.y + (player.size.h / 2),
     yv : yv,
+    //overwrite size via weapon in use
+    size : {
+      w : 2,
+      h : 2
+    },
     distance : 0
   });
 }
@@ -212,11 +248,31 @@ function main()
 
 function updateBulletPositions()
 {
+  const pos = require('./engine/position.js');
+
   for(var i in bullets)
   {
     if(bullets[i].distance < 666)
     {
-      if(checkCollision(bullets[i].x, bullets[i].y, bullets[i].xv, bullets[i].yv))
+      console.log(bullets[i]);
+
+      obj = pos.dynPointToStatic(bullets[i].x, bullets[i].y);
+
+      clear = true;
+
+      xdloop : for(xd=0;xd<bullets[i].xv;yd++)
+      {
+        ydloop : for(yd=0;yd<bullets[i].yv;yd++)
+        {
+          if(! pos.checkCollision(obj.x + xd, obj.y + yd, bullets[i].size.w, bullets[i].size.h))
+          {
+            clear = false;
+            break xdloop;
+          }
+        }
+      }
+
+      if(clear)
       {
         bullets[i].x += bullets[i].xv;
         bullets[i].y += bullets[i].yv;
